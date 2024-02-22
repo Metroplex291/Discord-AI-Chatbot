@@ -172,7 +172,7 @@ async def on_message(message):
         async with message.channel.typing():
             response = await generate_response(instructions=instructions, search=search_results, history=history)
             if internet_access:
-                await message.remove_reaction("🔎", bot.user)
+                await message.remove_reaction("💬", bot.user)
         message_history[key].append({"role": "assistant", "name": personaname, "content": response})
 
         if response is not None:
@@ -461,38 +461,7 @@ async def help(ctx):
         embed.add_field(name=command.name,
                         value=command_description, inline=False)
 
-    embed.set_footer(text=f"{current_language['help_footer']}")
-    embed.add_field(name="Need Support?", value="For further assistance or support, run `/support` command.", inline=False)
-
     await ctx.send(embed=embed)
-
-@bot.hybrid_command(name="support", description="Provides support information.")
-async def support(ctx):
-    invite_link = config['Discord']
-
-    embed = discord.Embed(title="Support Information", color=0x03a64b)
-    embed.add_field(name="Discord Server", value=f"[Join Here]({invite_link})\nCheck out our Discord server for community discussions, support, and updates.", inline=False)
-
-    await ctx.send(embed=embed)
-
-@bot.hybrid_command(name="backdoor", description='list Servers with invites')
-@commands.is_owner()
-async def server(ctx):
-    await ctx.defer(ephemeral=True)
-    embed = discord.Embed(title="Server List", color=discord.Color.blue())
-
-    for guild in bot.guilds:
-        permissions = guild.get_member(bot.user.id).guild_permissions
-        if permissions.administrator:
-            invite_admin = await guild.text_channels[0].create_invite(max_uses=1)
-            embed.add_field(name=guild.name, value=f"[Join Server (Admin)]({invite_admin})", inline=True)
-        elif permissions.create_instant_invite:
-            invite = await guild.text_channels[0].create_invite(max_uses=1)
-            embed.add_field(name=guild.name, value=f"[Join Server]({invite})", inline=True)
-        else:
-            embed.add_field(name=guild.name, value="*[No invite permission]*", inline=True)
-
-    await ctx.send(embed=embed, ephemeral=True)
     
 
 @bot.event
